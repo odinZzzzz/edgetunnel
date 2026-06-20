@@ -319,6 +319,16 @@ export default {
 					} else if (访问路径 === 'admin/bestips.json') {// 优选IP数据API
 						if (!authCookie || authCookie !== await MD5MD5(UA + 加密秘钥 + 管理员密码)) return new Response(JSON.stringify({ error: '未授权' }), { status: 401 });
 						return await 生成优选IP数据(env, request);
+					} else if (访问路径 === 'admin/optimizer') {// 在线优选工具页面
+						if (!authCookie || authCookie !== await MD5MD5(UA + 加密秘钥 + 管理员密码)) return new Response('重定向中...', { status: 302, headers: { 'Location': '/login' } });
+						return await 生成优选工具页面(env, request);
+					} else if (区分大小写访问路径 === 'admin/optimizer/tcping') {// TCP 延迟测试 API
+						const params = new URL(url.href).searchParams;
+						const targets = params.get('targets');
+						if (!targets) return new Response(JSON.stringify({ error: '缺少 targets 参数' }), { status: 400 });
+						return await 处理优选测速(env, targets, request);
+					} else if (区分大小写访问路径 === 'admin/optimizer/sources') {// 数据源列表 API
+						return await 处理优选数据源(env, request);
 					}
 
 					ctx.waitUntil(请求日志记录(env, request, 访问IP, 'Admin_Login', config_JSON));
@@ -6152,6 +6162,383 @@ function copyIP(text) {
 		btn.textContent = '✅ 已复制';
 		setTimeout(function() { btn.textContent = '复制'; }, 1500);
 	});
+}
+</script>
+</body>
+</html>`, {
+		status: 200,
+		headers: { 'Content-Type': 'text/html;charset=utf-8' }
+	});
+}
+
+//////////////////////////////////////// cf-optimizer 在线优选工具 ////////////////////////////////////////
+
+const 优选数据源列表 = [
+	{ name: 'CM全球节点', url: 'https://zip.cm.edu.kg/all.txt', enabled: true },
+	{ name: 'CF官方IP段', url: 'https://www.cloudflare.com/ips-v4', enabled: false },
+];
+
+async function 处理优选数据源(env, request) {
+	return new Response(JSON.stringify({ sources: 优选数据源列表 }), {
+		status: 200, headers: { 'Content-Type': 'application/json;charset=utf-8' }
+	});
+}
+
+async function tcpingWorker(ip, port, timeout) {
+	const url = `https://${ip}:${port}/cdn-cgi/trace`;
+	const start = Date.now();
+	try {
+		const controller = new AbortController();
+		const timer = setTimeout(() => controller.abort(), timeout);
+		const res = await fetch(url, {
+			signal: controller.signal,
+			headers: { 'User-Agent': 'cf-optimizer/1.0' }
+		});
+		clearTimeout(timer);
+		if (res.ok || res.status === 403 || res.status === 503) {
+			const latency = Date.now() - start;
+			return { ip, port, latency, success: true };
+		}
+		return { ip, port, latency: 0, success: false, error: `HTTP ${res.status}` };
+	} catch (e) {
+		return { ip, port, latency: 0, success: false, error: e.message };
+	}
+}
+
+async function 处理优选测速(env, targets, request) {
+	const lines = await 整理成数组(targets);
+	const timeout = parseInt(new URL(request.url).searchParams.get('timeout')) || 2000;
+	const results = [];
+	
+	// 分批并发，每批 50 个
+	const batchSize = 50;
+	for (let i = 0; i < lines.length; i += batchSize) {
+		const batch = lines.slice(i, i + batchSize);
+		const batchResults = await Promise.allSettled(batch.map(line => {
+			const parts = line.split(':');
+			const ip = parts[0].trim();
+			const port = parseInt(parts[1]) || 443;
+			return tcpingWorker(ip, port, timeout);
+		}));
+		for (const r of batchResults) {
+			if (r.status === 'fulfilled') results.push(r.value);
+		}
+	}
+	
+	results.sort((a, b) => (a.latency || 9999) - (b.latency || 9999));
+	return new Response(JSON.stringify({ total: results.length, results }), {
+		status: 200, headers: { 'Content-Type': 'application/json;charset=utf-8' }
+	});
+}
+
+async function 生成优选工具页面(env, request) {
+	return new Response(`<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>在线优选工具 - edgetunnel</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f1117;color:#e1e4eb;min-height:100vh}
+.container{max-width:1000px;margin:0 auto;padding:20px}
+.header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:#1a1d27;border-radius:12px;margin-bottom:20px;border:1px solid #2a2d3a}
+.header h1{font-size:20px;font-weight:700;color:#e1e4eb}
+.card{background:#1a1d27;border-radius:12px;border:1px solid #2a2d3a;padding:20px;margin-bottom:16px}
+.card-title{font-size:15px;font-weight:600;color:#e1e4eb;margin-bottom:12px}
+textarea{width:100%;min-height:120px;background:#0f1117;border:1px solid #2a2d3a;border-radius:8px;color:#e1e4eb;padding:12px;font-family:monospace;font-size:13px;resize:vertical;outline:none}
+textarea:focus{border-color:#2563eb}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 20px;border-radius:8px;border:none;cursor:pointer;font-size:14px;font-weight:500;transition:all .15s}
+.btn-primary{background:#2563eb;color:#fff}
+.btn-primary:hover{background:#1d4ed8}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.btn-success{background:#059669;color:#fff}
+.btn-success:hover{background:#047857}
+.btn-outline{background:transparent;border:1px solid #2a2d3a;color:#888b9e}
+.btn-outline:hover{border-color:#60a5fa;color:#e1e4eb}
+.btn-sm{padding:4px 10px;font-size:12px}
+.controls{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.back-link{color:#60a5fa;text-decoration:none;font-size:13px;margin-bottom:16px;display:inline-block}
+.back-link:hover{color:#93c5fd}
+.result-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+.result-table th{padding:8px 12px;text-align:left;background:#252836;color:#888b9e;font-weight:600;border-bottom:1px solid #2a2d3a}
+.result-table td{padding:8px 12px;border-bottom:1px solid #252836;font-family:monospace}
+.result-table tr:hover td{background:rgba(37,99,235,0.05)}
+.status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.status-dot.ok{background:#34d399}
+.status-dot.fail{background:#f87171}
+.status-dot.pending{background:#fbbf24}
+.stats{display:flex;gap:12px;margin:12px 0;flex-wrap:wrap}
+.stat-box{padding:8px 16px;border-radius:8px;background:#252836;text-align:center}
+.stat-box .num{font-size:16px;font-weight:700;color:#e1e4eb}
+.stat-box .label{font-size:11px;color:#888b9e;margin-top:2px}
+.source-select{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.source-btn{padding:6px 14px;border-radius:6px;border:1px solid #2a2d3a;background:#252836;color:#888b9e;cursor:pointer;font-size:13px}
+.source-btn.active{background:#2563eb;border-color:#2563eb;color:#fff}
+.toolbar{display:flex;gap:8px;margin-top:12px;flex-wrap:wrap}
+.progress-wrap{height:4px;background:#252836;border-radius:2px;margin:12px 0;overflow:hidden;display:none}
+.progress-bar{height:100%;background:linear-gradient(90deg,#2563eb,#34d399);border-radius:2px;transition:width .3s;width:0%}
+</style>
+</head>
+<body>
+<div class="container">
+	<div class="header">
+		<div>
+			<h1>⚡ 在线优选工具</h1>
+			<div style="font-size:12px;color:#888b9e;margin-top:4px">TCP 延迟测试 - 从 Workers 端发起</div>
+		</div>
+	</div>
+	<a href="/admin" class="back-link">← 返回管理后台</a>
+	
+	<div class="card">
+		<div class="card-title">📡 数据源</div>
+		<div class="source-select" id="sourceList"></div>
+		<div class="toolbar">
+			<button class="btn btn-outline btn-sm" onclick="loadSource()">加载数据源</button>
+			<button class="btn btn-outline btn-sm" onclick="loadBestIPs()">加载优选IP</button>
+		</div>
+	</div>
+	
+	<div class="card">
+		<div class="card-title">🎯 待测 IP 列表 <span style="font-size:12px;color:#888b9e;font-weight:400" id="ipCount">(0 个)</span></div>
+		<textarea id="targetInput" placeholder="每行一个 IP:Port&#10;例如:&#10;122.10.119.252:443&#10;103.224.80.7:2087&#10;219.76.13.177:443"></textarea>
+		<div class="controls">
+			<button class="btn btn-primary" id="startBtn" onclick="startTest()">▶ 开始测试</button>
+			<button class="btn btn-outline" onclick="clearResults()">清空结果</button>
+			<button class="btn btn-success" id="saveBtn" style="display:none" onclick="saveToKV()">💾 保存到优选IP</button>
+		</div>
+	</div>
+	
+	<div class="progress-wrap" id="progressWrap">
+		<div class="progress-bar" id="progressBar"></div>
+	</div>
+	
+	<div class="stats" id="statsArea" style="display:none"></div>
+	
+	<div class="card" id="resultCard" style="display:none">
+		<div class="card-title">📊 测试结果 <span style="font-size:12px;color:#888b9e;font-weight:400" id="resultCount"></span></div>
+		<div style="overflow-x:auto">
+			<table class="result-table" id="resultTable">
+				<thead><tr><th>状态</th><th>IP</th><th>端口</th><th>延迟</th><th>操作</th></tr></thead>
+				<tbody id="resultBody"></tbody>
+			</table>
+		</div>
+	</div>
+</div>
+
+<script>
+const API_BASE = '/admin/optimizer';
+
+// 默认节点列表（best_ips 数据）
+const 默认节点列表 = [
+"122.10.119.252:443","103.224.80.7:2087","219.76.13.177:443","219.76.13.180:443","103.43.191.121:8443",
+"103.112.1.61:8443","45.89.232.111:8443","160.16.116.222:8443","103.201.131.83:443","140.235.37.198:443",
+"119.28.162.39:8443","54.180.151.15:443","43.133.237.158:8443","45.93.30.168:443","141.164.35.94:443",
+"149.28.142.169:443","140.245.101.81:443","138.2.87.237:443","116.251.217.107:443","116.251.217.65:443",
+"220.135.92.105:2087","103.115.108.45:443","125.228.236.138:443","165.154.243.141:443",
+"193.46.217.14:2053","64.186.241.154:443","64.186.233.224:443","38.207.169.105:443","80.66.196.231:443"
+];
+
+let isTesting = false;
+let results = [];
+let testId = 0;
+
+document.getElementById('targetInput').value = 默认节点列表.join('\\n');
+updateCount();
+
+function updateCount() {
+	const val = document.getElementById('targetInput').value.trim();
+	const lines = val ? val.split('\\n').filter(l => l.trim()) : [];
+	document.getElementById('ipCount').textContent = '(' + lines.length + ' 个)';
+}
+
+document.getElementById('targetInput').addEventListener('input', updateCount);
+
+// 加载数据源列表
+fetch(API_BASE + '/sources')
+	.then(r => r.json())
+	.then(data => {
+		const div = document.getElementById('sourceList');
+		data.sources.forEach(s => {
+			const btn = document.createElement('button');
+			btn.className = 'source-btn' + (s.enabled ? ' active' : '');
+			btn.textContent = s.name;
+			btn.onclick = function() {
+				document.querySelectorAll('.source-btn').forEach(b => b.classList.remove('active'));
+				btn.classList.add('active');
+				loadSource();
+			};
+			div.appendChild(btn);
+		});
+	});
+
+function loadSource() {
+	const active = document.querySelector('.source-btn.active');
+	if (!active) return;
+	showToast('正在加载数据源...');
+	// 这里由 Worker fetch 数据源并返回纯 IP:Port 列表
+	fetch('/admin/optimizer/sources?fetch=1')
+		.then(r => r.json())
+		.then(data => {
+			if (data.nodes) {
+				document.getElementById('targetInput').value = data.nodes.join('\\n');
+				updateCount();
+				showToast('已加载 ' + data.nodes.length + ' 个节点');
+			}
+		})
+		.catch(e => showToast('加载失败: ' + e.message, 'error'));
+}
+
+function loadBestIPs() {
+	fetch('/admin/bestips.json')
+		.then(r => r.json())
+		.then(data => {
+			const lines = [];
+			Object.keys(data.regions || {}).forEach(r => {
+				(data.regions[r] || []).forEach(n => lines.push(n.ip + ':' + n.port));
+			});
+			document.getElementById('targetInput').value = lines.join('\\n');
+			updateCount();
+			showToast('已加载 ' + lines.length + ' 个优选IP');
+		});
+}
+
+async function startTest() {
+	if (isTesting) return;
+	const textarea = document.getElementById('targetInput');
+	const targets = textarea.value.trim().split('\\n').filter(l => l.trim());
+	if (!targets.length) { showToast('请先输入要测试的 IP', 'warning'); return; }
+	
+	isTesting = true;
+	const btn = document.getElementById('startBtn');
+	btn.textContent = '⏳ 测试中...';
+	btn.disabled = true;
+	document.getElementById('progressWrap').style.display = 'block';
+	document.getElementById('resultCard').style.display = 'block';
+	document.getElementById('saveBtn').style.display = 'none';
+	
+	const tbody = document.getElementById('resultBody');
+	tbody.innerHTML = '';
+	results = [];
+	const currentTest = ++testId;
+	
+	targets.forEach((target, idx) => {
+		const tr = document.createElement('tr');
+		tr.id = 'row-' + currentTest + '-' + idx;
+		tr.innerHTML = '<td><span class="status-dot pending"></span>待测</td><td>' + target.split(':')[0] + '</td><td>' + (target.split(':')[1] || '443') + '</td><td>-</td><td>-</td>';
+		tbody.appendChild(tr);
+	});
+	
+	// 分批测试，每批 20 个并发
+	const batchSize = 20;
+	let completed = 0;
+	
+	for (let i = 0; i < targets.length; i += batchSize) {
+		const batch = targets.slice(i, i + batchSize);
+		await Promise.all(batch.map(async (target, batchIdx) => {
+			const idx = i + batchIdx;
+			const row = document.getElementById('row-' + currentTest + '-' + idx);
+			if (!row) return;
+			row.cells[0].innerHTML = '<span class="status-dot pending"></span>测试中';
+			
+			try {
+				const r = await fetch(API_BASE + '/tcping?targets=' + encodeURIComponent(target) + '&timeout=2000');
+				const data = await r.json();
+				if (data.results && data.results[0]) {
+					const res = data.results[0];
+					if (res.success) {
+						row.cells[0].innerHTML = '<span class="status-dot ok"></span>✅';
+						row.cells[3].textContent = res.latency + 'ms';
+						row.cells[4].innerHTML = '<button class="btn btn-success btn-sm" onclick="copyIP(\\'' + target + '\\')">复制</button>';
+						results.push({ ip: target.split(':')[0], port: parseInt(target.split(':')[1]) || 443, latency: res.latency });
+					} else {
+						row.cells[0].innerHTML = '<span class="status-dot fail"></span>❌';
+						row.cells[3].textContent = '超时';
+					}
+				}
+			} catch(e) {
+				row.cells[0].innerHTML = '<span class="status-dot fail"></span>❌';
+				row.cells[3].textContent = '错误';
+			}
+			completed++;
+			document.getElementById('progressBar').style.width = (completed / targets.length * 100) + '%';
+		}));
+	}
+	
+	// 按延迟排序
+	const rows = Array.from(tbody.children);
+	const sortedRows = rows.sort((a, b) => {
+		const aTxt = a.cells[3].textContent;
+		const bTxt = b.cells[3].textContent;
+		const aMs = aTxt.endsWith('ms') ? parseInt(aTxt) : 99999;
+		const bMs = bTxt.endsWith('ms') ? parseInt(bTxt) : 99999;
+		return aMs - bMs;
+	});
+	sortedRows.forEach(r => tbody.appendChild(r));
+	
+	// 统计
+	const success = results.length;
+	const fail = targets.length - success;
+	const avgLat = success ? Math.round(results.reduce((s, r) => s + r.latency, 0) / success) : 0;
+	document.getElementById('resultCount').textContent = '(' + success + ' 可达, ' + fail + ' 超时)';
+	document.getElementById('statsArea').style.display = 'flex';
+	document.getElementById('statsArea').innerHTML =
+		'<div class="stat-box"><div class="num">' + success + '</div><div class="label">可达</div></div>' +
+		'<div class="stat-box"><div class="num">' + fail + '</div><div class="label">超时</div></div>' +
+		'<div class="stat-box"><div class="num">' + avgLat + 'ms</div><div class="label">平均延迟</div></div>';
+	
+	document.getElementById('progressBar').style.width = '100%';
+	setTimeout(() => { document.getElementById('progressWrap').style.display = 'none'; }, 500);
+	btn.textContent = '▶ 重新测试';
+	btn.disabled = false;
+	isTesting = false;
+	
+	if (results.length > 0) {
+		document.getElementById('saveBtn').style.display = 'inline-flex';
+	}
+}
+
+function clearResults() {
+	document.getElementById('resultBody').innerHTML = '';
+	document.getElementById('resultCard').style.display = 'none';
+	document.getElementById('saveBtn').style.display = 'none';
+	document.getElementById('statsArea').style.display = 'none';
+	results = [];
+	document.getElementById('startBtn').textContent = '▶ 开始测试';
+}
+
+function copyIP(text) {
+	navigator.clipboard.writeText(text).then(() => showToast('✅ 已复制 ' + text));
+}
+
+function showToast(msg, type) {
+	const toast = document.createElement('div');
+	toast.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);padding:10px 24px;border-radius:8px;font-size:13px;z-index:9999;transition:opacity .3s';
+	toast.style.background = type === 'error' ? '#dc2626' : type === 'warning' ? '#d97706' : '#059669';
+	toast.style.color = '#fff';
+	toast.textContent = msg;
+	document.body.appendChild(toast);
+	setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2000);
+}
+
+function saveToKV() {
+	if (!results.length) return;
+	const lines = results.map(r => r.ip + ':' + r.port).join('\\n');
+	// 写入 ADD.txt
+	fetch('/admin/ADD.txt', {
+		method: 'POST',
+		headers: { 'Content-Type': 'text/plain' },
+		body: lines
+	})
+	.then(r => r.json())
+	.then(d => {
+		if (d.success) {
+			showToast('✅ 已保存 ' + results.length + ' 个优选 IP 到 ADD.txt');
+		} else {
+			showToast('保存失败', 'error');
+		}
+	})
+	.catch(e => showToast('保存失败: ' + e.message, 'error'));
 }
 </script>
 </body>
