@@ -5957,21 +5957,24 @@ const 优选IP数据 = {
 	"version": "1.0.0",
 	"updated": "2026-06-21",
 	"regions": {
-		"HK":[{"ip":"43.168.16.112","port":443,"latency":242.52,"speed":50.44,"is_fast":true},{"ip":"122.10.119.252","port":443,"latency":38.94,"speed":0,"is_fast":false},{"ip":"103.43.191.121","port":8443,"latency":59.36,"speed":0,"is_fast":false},{"ip":"103.224.80.7","port":2087,"latency":113.77,"speed":0,"is_fast":false},{"ip":"47.239.4.246","port":443,"latency":137.56,"speed":3.06,"is_fast":false}],
-		"JP":[{"ip":"91.200.243.32","port":443,"latency":47.55,"speed":10.87,"is_fast":true},{"ip":"140.235.37.198","port":443,"latency":57.72,"speed":12.6,"is_fast":true},{"ip":"103.112.1.61","port":8443,"latency":63.9,"speed":15.42,"is_fast":true},{"ip":"103.201.131.83","port":443,"latency":80.79,"speed":15.74,"is_fast":true},{"ip":"45.89.232.111","port":8443,"latency":93.09,"speed":16.57,"is_fast":true}],
-		"KR":[{"ip":"45.93.30.168","port":443,"latency":55.92,"speed":0,"is_fast":false},{"ip":"119.28.162.39","port":8443,"latency":86.85,"speed":7.51,"is_fast":false},{"ip":"141.164.51.88","port":443,"latency":218.5,"speed":0,"is_fast":false},{"ip":"144.24.73.232","port":443,"latency":249.92,"speed":7.03,"is_fast":false},{"ip":"131.186.27.112","port":2096,"latency":290.73,"speed":2.9,"is_fast":false}],
-		"SG":[{"ip":"140.245.101.81","port":443,"latency":209.7,"speed":0,"is_fast":false},{"ip":"139.99.124.165","port":443,"latency":223.35,"speed":0,"is_fast":false},{"ip":"116.251.216.12","port":8443,"latency":223.77,"speed":0,"is_fast":false},{"ip":"129.226.150.167","port":443,"latency":227.21,"speed":8.59,"is_fast":false},{"ip":"124.156.202.172","port":443,"latency":228.83,"speed":0,"is_fast":false}],
-		"TW":[{"ip":"125.228.236.138","port":443,"latency":62.36,"speed":13.26,"is_fast":true},{"ip":"103.115.108.45","port":443,"latency":273.79,"speed":0,"is_fast":false}],
-		"US":[{"ip":"167.172.197.64","port":443,"latency":140.41,"speed":4.23,"is_fast":false},{"ip":"167.172.223.14","port":443,"latency":142.27,"speed":3,"is_fast":false},{"ip":"142.248.218.100","port":2053,"latency":145.67,"speed":5.18,"is_fast":false},{"ip":"146.190.154.188","port":443,"latency":146.62,"speed":0,"is_fast":false},{"ip":"146.190.174.67","port":443,"latency":146.99,"speed":6.29,"is_fast":false}],
-		"AE":[{"ip":"147.78.0.186","port":8443,"latency":166.22,"speed":0,"is_fast":false},{"ip":"147.78.0.186","port":2053,"latency":182.65,"speed":0,"is_fast":false},{"ip":"90.156.220.194","port":2053,"latency":281.65,"speed":0,"is_fast":false},{"ip":"109.61.42.37","port":443,"latency":368.03,"speed":0,"is_fast":false},{"ip":"38.180.11.15","port":443,"latency":441.48,"speed":4.05,"is_fast":false}],
-		"DE":[{"ip":"57.129.47.4","port":8443,"latency":154.15,"speed":0,"is_fast":false},{"ip":"140.82.39.218","port":8443,"latency":156.87,"speed":3.18,"is_fast":false},{"ip":"89.58.15.204","port":8443,"latency":160.14,"speed":0,"is_fast":false},{"ip":"89.168.68.57","port":2053,"latency":161.46,"speed":0,"is_fast":false},{"ip":"91.107.245.213","port":2053,"latency":164.8,"speed":6.32,"is_fast":false}],
-		"GB":[{"ip":"91.199.32.99","port":2053,"latency":183.49,"speed":0,"is_fast":false},{"ip":"146.70.61.40","port":443,"latency":183.66,"speed":5.54,"is_fast":false},{"ip":"91.245.226.122","port":2053,"latency":189.64,"speed":0,"is_fast":false},{"ip":"104.194.144.105","port":443,"latency":190.97,"speed":4.71,"is_fast":false},{"ip":"45.38.19.166","port":2096,"latency":201.8,"speed":6.58,"is_fast":false}],
-		"FR":[{"ip":"31.59.103.186","port":2053,"latency":166.55,"speed":5.09,"is_fast":false},{"ip":"31.59.120.179","port":2053,"latency":166.94,"speed":5.6,"is_fast":false},{"ip":"31.59.121.223","port":8443,"latency":171.04,"speed":4.83,"is_fast":false},{"ip":"31.59.120.124","port":2053,"latency":172.48,"speed":6.65,"is_fast":false},{"ip":"31.58.76.50","port":2053,"latency":172.74,"speed":5.31,"is_fast":false}],
-		"NL":[{"ip":"91.90.192.37","port":443,"latency":150.21,"speed":0,"is_fast":false},{"ip":"31.59.174.246","port":2053,"latency":151.33,"speed":3.41,"is_fast":false},{"ip":"141.144.195.228","port":443,"latency":157.92,"speed":0,"is_fast":false},{"ip":"188.253.27.22","port":443,"latency":161.15,"speed":5.96,"is_fast":false},{"ip":"188.253.26.93","port":443,"latency":163.15,"speed":0,"is_fast":false}],
-		"CA":[{"ip":"140.238.144.211","port":443,"latency":207.41,"speed":0,"is_fast":false},{"ip":"104.223.62.204","port":443,"latency":224.47,"speed":0,"is_fast":false},{"ip":"147.182.144.228","port":443,"latency":226.31,"speed":0,"is_fast":false},{"ip":"96.44.136.186","port":2053,"latency":234.46,"speed":0,"is_fast":false},{"ip":"142.4.215.110","port":443,"latency":278.35,"speed":0,"is_fast":false}],
-		"IN":[{"ip":"13.235.254.54","port":443,"latency":125.56,"speed":12.73,"is_fast":true},{"ip":"139.84.166.44","port":443,"latency":140.37,"speed":8.94,"is_fast":false},{"ip":"103.181.177.88","port":443,"latency":256.44,"speed":0,"is_fast":false},{"ip":"129.154.251.13","port":443,"latency":338,"speed":3.24,"is_fast":false},{"ip":"4.240.110.47","port":443,"latency":338.5,"speed":0,"is_fast":false}],
-		"RU":[{"ip":"45.89.228.81","port":443,"latency":183.47,"speed":3.48,"is_fast":false},{"ip":"95.188.72.67","port":443,"latency":189.03,"speed":0,"is_fast":false},{"ip":"91.188.213.107","port":443,"latency":189.58,"speed":0,"is_fast":false},{"ip":"46.29.162.166","port":443,"latency":191.19,"speed":8.09,"is_fast":false},{"ip":"91.184.244.230","port":443,"latency":217.62,"speed":3.81,"is_fast":false}],
-		"MY":[{"ip":"96.126.190.196","port":443,"latency":184.29,"speed":0,"is_fast":false},{"ip":"47.250.81.46","port":2087,"latency":299.64,"speed":0,"is_fast":false},{"ip":"47.250.212.59","port":2053,"latency":304.24,"speed":0,"is_fast":false},{"ip":"47.250.212.59","port":443,"latency":321.71,"speed":4.4,"is_fast":false},{"ip":"38.54.112.233","port":443,"latency":614.62,"speed":0,"is_fast":false}]
+		"AE":[{"ip":"176.97.66.175","port":443,"latency":209.71,"speed":9.46,"is_fast":false},{"ip":"109.61.42.37","port":443,"latency":314.55,"speed":4.32,"is_fast":false},{"ip":"193.123.74.174","port":8443,"latency":1306.75,"speed":0.0,"is_fast":false}],
+		"CA":[{"ip":"96.44.136.186","port":2053,"latency":184.01,"speed":7.7,"is_fast":false},{"ip":"167.160.190.137","port":443,"latency":198.02,"speed":8.36,"is_fast":false},{"ip":"65.49.232.101","port":443,"latency":198.07,"speed":7.81,"is_fast":false},{"ip":"44.32.224.195","port":443,"latency":208.7,"speed":7.19,"is_fast":false},{"ip":"72.11.146.199","port":443,"latency":208.87,"speed":8.83,"is_fast":false}],
+		"CH":[{"ip":"85.4.221.234","port":443,"latency":149.58,"speed":6.13,"is_fast":false},{"ip":"45.90.57.139","port":8443,"latency":150.79,"speed":8.02,"is_fast":false},{"ip":"194.246.118.199","port":443,"latency":155.5,"speed":7.99,"is_fast":false},{"ip":"91.90.193.54","port":8443,"latency":160.69,"speed":7.5,"is_fast":false},{"ip":"194.154.29.72","port":443,"latency":164.99,"speed":6.64,"is_fast":false}],
+		"DE":[{"ip":"64.118.159.219","port":443,"latency":136.59,"speed":10.75,"is_fast":true},{"ip":"94.159.103.71","port":443,"latency":146.2,"speed":10.17,"is_fast":true},{"ip":"193.26.157.56","port":8443,"latency":137.57,"speed":8.68,"is_fast":false},{"ip":"171.22.31.116","port":2053,"latency":140.85,"speed":7.6,"is_fast":false},{"ip":"193.26.158.212","port":8443,"latency":142.22,"speed":7.79,"is_fast":false}],
+		"FI":[{"ip":"83.147.216.34","port":443,"latency":168.11,"speed":5.48,"is_fast":false},{"ip":"83.147.216.170","port":8443,"latency":177.03,"speed":7.62,"is_fast":false},{"ip":"171.22.114.27","port":8443,"latency":177.38,"speed":6.22,"is_fast":false},{"ip":"45.12.146.156","port":443,"latency":180.03,"speed":9.08,"is_fast":false},{"ip":"85.192.61.175","port":443,"latency":180.91,"speed":6.4,"is_fast":false}],
+		"FR":[{"ip":"217.60.37.77","port":8443,"latency":160.15,"speed":10.17,"is_fast":true},{"ip":"207.180.252.131","port":443,"latency":160.71,"speed":10.48,"is_fast":true},{"ip":"194.61.28.39","port":2053,"latency":146.19,"speed":7.0,"is_fast":false},{"ip":"31.56.176.37","port":2053,"latency":147.3,"speed":6.36,"is_fast":false},{"ip":"161.97.88.98","port":443,"latency":147.95,"speed":6.3,"is_fast":false}],
+		"GB":[{"ip":"185.212.62.204","port":443,"latency":159.13,"speed":14.49,"is_fast":true},{"ip":"46.226.162.57","port":443,"latency":153.2,"speed":5.7,"is_fast":false},{"ip":"193.233.210.127","port":443,"latency":158.68,"speed":4.61,"is_fast":false},{"ip":"138.124.114.232","port":443,"latency":160.47,"speed":0.0,"is_fast":false},{"ip":"85.192.60.129","port":443,"latency":167.4,"speed":9.05,"is_fast":false}],
+		"HK":[{"ip":"122.10.119.252","port":443,"latency":41.27,"speed":18.54,"is_fast":true},{"ip":"103.224.80.7","port":2087,"latency":63.93,"speed":10.8,"is_fast":true},{"ip":"219.76.13.177","port":443,"latency":136.57,"speed":21.7,"is_fast":true},{"ip":"219.76.13.180","port":443,"latency":183.85,"speed":18.93,"is_fast":true},{"ip":"103.43.191.121","port":8443,"latency":63.46,"speed":0.0,"is_fast":false}],
+		"IN":[{"ip":"13.235.254.54","port":443,"latency":128.78,"speed":13.05,"is_fast":true},{"ip":"129.154.251.13","port":443,"latency":174.64,"speed":10.03,"is_fast":true},{"ip":"20.219.46.208","port":8443,"latency":146.71,"speed":3.58,"is_fast":false},{"ip":"45.89.105.211","port":443,"latency":200.01,"speed":9.28,"is_fast":false},{"ip":"103.181.177.88","port":443,"latency":201.28,"speed":8.62,"is_fast":false}],
+		"JP":[{"ip":"103.112.1.61","port":8443,"latency":64.18,"speed":29.45,"is_fast":true},{"ip":"45.89.232.111","port":8443,"latency":64.3,"speed":14.8,"is_fast":true},{"ip":"160.16.116.222","port":8443,"latency":84.89,"speed":17.02,"is_fast":true},{"ip":"103.201.131.83","port":443,"latency":91.72,"speed":16.42,"is_fast":true},{"ip":"140.235.37.198","port":443,"latency":97.82,"speed":14.31,"is_fast":true}],
+		"KR":[{"ip":"119.28.162.39","port":8443,"latency":61.94,"speed":23.64,"is_fast":true},{"ip":"54.180.151.15","port":443,"latency":61.97,"speed":24.86,"is_fast":true},{"ip":"43.133.237.158","port":8443,"latency":1073.11,"speed":30.85,"is_fast":true},{"ip":"45.93.30.168","port":443,"latency":28.47,"speed":0.0,"is_fast":false},{"ip":"141.164.35.94","port":443,"latency":227.57,"speed":7.23,"is_fast":false}],
+		"MY":[{"ip":"202.61.75.46","port":443,"latency":78.54,"speed":19.98,"is_fast":true},{"ip":"47.250.81.46","port":2087,"latency":136.27,"speed":0.0,"is_fast":false},{"ip":"38.54.112.233","port":443,"latency":252.28,"speed":0.0,"is_fast":false}],
+		"NL":[{"ip":"185.214.10.72","port":2053,"latency":152.89,"speed":0.0,"is_fast":false},{"ip":"193.233.127.31","port":8443,"latency":153.01,"speed":6.61,"is_fast":false},{"ip":"193.39.208.26","port":443,"latency":155.17,"speed":7.83,"is_fast":false},{"ip":"193.39.208.239","port":443,"latency":161.94,"speed":0.0,"is_fast":false},{"ip":"178.255.222.148","port":443,"latency":164.27,"speed":6.65,"is_fast":false}],
+		"RU":[{"ip":"195.133.53.166","port":8443,"latency":112.47,"speed":11.66,"is_fast":true},{"ip":"46.29.162.166","port":443,"latency":116.16,"speed":0.0,"is_fast":false},{"ip":"45.130.147.132","port":443,"latency":117.72,"speed":9.44,"is_fast":false},{"ip":"91.243.86.65","port":443,"latency":154.21,"speed":7.65,"is_fast":false},{"ip":"46.17.43.161","port":8443,"latency":165.36,"speed":7.18,"is_fast":false}],
+		"SE":[{"ip":"37.252.8.202","port":443,"latency":162.82,"speed":11.37,"is_fast":true},{"ip":"193.232.178.149","port":8443,"latency":181.21,"speed":8.73,"is_fast":false},{"ip":"83.147.254.115","port":443,"latency":182.55,"speed":6.7,"is_fast":false},{"ip":"62.60.152.13","port":8443,"latency":182.88,"speed":8.46,"is_fast":false},{"ip":"195.137.245.244","port":8443,"latency":183.76,"speed":7.31,"is_fast":false}],
+		"SG":[{"ip":"149.28.142.169","port":443,"latency":65.14,"speed":22.28,"is_fast":true},{"ip":"140.245.101.81","port":443,"latency":111.05,"speed":15.32,"is_fast":true},{"ip":"138.2.87.237","port":443,"latency":112.9,"speed":3.02,"is_fast":false},{"ip":"116.251.217.107","port":443,"latency":180.86,"speed":8.3,"is_fast":false},{"ip":"116.251.217.65","port":443,"latency":188.15,"speed":0.0,"is_fast":false}],
+		"TW":[{"ip":"220.135.92.105","port":2087,"latency":27.19,"speed":32.72,"is_fast":true},{"ip":"103.115.108.45","port":443,"latency":150.99,"speed":10.5,"is_fast":true},{"ip":"125.228.236.138","port":443,"latency":45.01,"speed":0.0,"is_fast":false},{"ip":"165.154.243.141","port":443,"latency":223.36,"speed":5.84,"is_fast":false}],
+		"US":[{"ip":"193.46.217.14","port":2053,"latency":130.91,"speed":12.13,"is_fast":true},{"ip":"64.186.241.154","port":443,"latency":131.55,"speed":12.66,"is_fast":true},{"ip":"64.186.233.224","port":443,"latency":135.46,"speed":11.93,"is_fast":true},{"ip":"38.207.169.105","port":443,"latency":137.37,"speed":11.63,"is_fast":true},{"ip":"80.66.196.231","port":443,"latency":138.14,"speed":11.4,"is_fast":true}],
 	}
 };
 
@@ -6106,47 +6109,33 @@ tr:last-child td{border-bottom:none}
 	<div class="controls">
 		<div class="region-filter" id="regionFilter">
 			<button class="region-btn active" onclick="filterRegion('all')">🌍 全部</button>
-			${regions.map(r => \`<button class="region-btn\${jsonData.regions[r].some(n=>n.is_fast) ? ' fast-highlight' : ''}" onclick="filterRegion('\${r}')">\${r}</button>\`).join('')}
+			${regions.map(r => '<button class="region-btn' + (jsonData.regions[r].some(n=>n.is_fast) ? ' fast-highlight' : '') + '" onclick="filterRegion(\'' + r + '\')">' + r + '</button>').join('')}
 		</div>
 	</div>
 	
-	${regions.map(region => \`
-	<div class="region-section" data-region="\${region}">
-		<div class="region-header">
-			<h3>🌍 \${region}</h3>
-			<span class="region-count">\${jsonData.regions[region].length} 个节点</span>
-		</div>
-		<div class="table-wrap">
-			<table>
-				<thead><tr>
-					<th>IP 地址</th>
-					<th>端口</th>
-					<th>延迟</th>
-					<th>下载速度</th>
-					<th>状态</th>
-					<th>操作</th>
-				</tr></thead>
-				<tbody>
-				\${jsonData.regions[region].map(n => {
+	${regions.map(region => {
+		return '<div class="region-section" data-region="' + region + '">' +
+			'<div class="region-header">' +
+				'<h3>🌍 ' + region + '</h3>' +
+				'<span class="region-count">' + jsonData.regions[region].length + ' 个节点</span>' +
+			'</div>' +
+			'<div class="table-wrap"><table>' +
+				'<thead><tr><th>IP 地址</th><th>端口</th><th>延迟</th><th>下载速度</th><th>状态</th><th>操作</th></tr></thead><tbody>' +
+				jsonData.regions[region].map(n => {
 					const latClass = n.latency < 80 ? 'good' : n.latency < 200 ? 'fair' : 'slow';
 					const speedPct = Math.min(100, (n.speed / 50) * 100);
-					return \`<tr>
-						<td style="font-family:monospace;font-weight:500">\${n.ip}</td>
-						<td>\${n.port}</td>
-						<td><span class="latency-dot \${latClass}"></span>\${n.latency.toFixed(1)}ms</td>
-						<td>
-							<div class="speed-bar"><div class="speed-bar-fill" style="width:\${speedPct}%"></div></div>
-							\${n.speed > 0 ? n.speed.toFixed(1) + 'Mbps' : '-'}
-						</td>
-						<td><span class="badge \${n.is_fast ? 'fast' : 'normal'}">\${n.is_fast ? '⚡优选高速' : '普通'}</span></td>
-						<td><button class="copy-btn" onclick="copyIP('\${n.ip}:\${n.port}')">复制</button></td>
-					</tr>\`;
-				}).join('')}
-				</tbody>
-			</table>
-		</div>
-	</div>
-	\`).join('')}
+					return '<tr>' +
+						'<td style="font-family:monospace;font-weight:500">' + n.ip + '</td>' +
+						'<td>' + n.port + '</td>' +
+						'<td><span class="latency-dot ' + latClass + '"></span>' + n.latency.toFixed(1) + 'ms</td>' +
+						'<td><div class="speed-bar"><div class="speed-bar-fill" style="width:' + speedPct + '%"></div></div>' + (n.speed > 0 ? n.speed.toFixed(1) + 'Mbps' : '-') + '</td>' +
+						'<td><span class="badge ' + (n.is_fast ? 'fast' : 'normal') + '">' + (n.is_fast ? '⚡优选高速' : '普通') + '</span></td>' +
+						'<td><button class="copy-btn" onclick="copyIP(\'' + n.ip + ':' + n.port + '\')">复制</button></td>' +
+					'</tr>';
+				}).join('') +
+				'</tbody></table></div>' +
+			'</div>';
+	}).join('')}
 </div>
 
 <script>
@@ -6154,18 +6143,14 @@ function filterRegion(region) {
 	document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
 	event.target.classList.add('active');
 	document.querySelectorAll('.region-section').forEach(s => {
-		if (region === 'all' || s.dataset.region === region) {
-			s.style.display = '';
-		} else {
-			s.style.display = 'none';
-		}
+		s.style.display = (region === 'all' || s.dataset.region === region) ? '' : 'none';
 	});
 }
 function copyIP(text) {
 	navigator.clipboard.writeText(text).then(() => {
 		const btn = event.target;
 		btn.textContent = '✅ 已复制';
-		setTimeout(() => { btn.textContent = '复制'; }, 1500);
+		setTimeout(function() { btn.textContent = '复制'; }, 1500);
 	});
 }
 </script>
