@@ -43,7 +43,30 @@ export default {
 			const proxyIPs = await 整理成数组(env.PROXYIP);
 			反代IP = proxyIPs[Math.floor(Math.random() * proxyIPs.length)];
 			启用反代兜底 = false;
+		} else if (env.PROXYIP_AUTO && env.BEST_IPS_KV) {
+			try {
+				const 浏览器区域 = request.cf?.country || '';
+				let 优选IP文本 = '';
+				if (浏览器区域 && 浏览器区域.length === 2) {
+					优选IP文本 = await env.BEST_IPS_KV.get(浏览器区域) || await env.BEST_IPS_KV.get('best_ips') || '';
+				} else {
+					优选IP文本 = await env.BEST_IPS_KV.get('best_ips') || '';
+				}
+				if (优选IP文本) {
+					const 优选IP列表 = await 整理成数组(优选IP文本);
+					if (优选IP列表.length > 0) {
+						反代IP = 优选IP列表[Math.floor(Math.random() * 优选IP列表.length)].split(' ')[0];
+					} else {
+						反代IP = (`${request.cf.colo}.${特征码字典[0]}.${特征码字典[1]}SsSs.nEt`).toLowerCase();
+					}
+				} else {
+					反代IP = (`${request.cf.colo}.${特征码字典[0]}.${特征码字典[1]}SsSs.nEt`).toLowerCase();
+				}
+			} catch (e) {
+				反代IP = (`${request.cf.colo}.${特征码字典[0]}.${特征码字典[1]}SsSs.nEt`).toLowerCase();
+			}
 		} else 反代IP = (`${request.cf.colo}.${特征码字典[0]}.${特征码字典[1]}SsSs.nEt`).toLowerCase();
+		if (!反代IP) 反代IP = (`${request.cf.colo}.${特征码字典[0]}.${特征码字典[1]}SsSs.nEt`).toLowerCase();
 		const 访问IP = request.headers.get('CF-Connecting-IP') || request.headers.get('True-Client-IP') || request.headers.get('X-Real-IP') || request.headers.get('X-Forwarded-For') || request.headers.get('Fly-Client-IP') || request.headers.get('X-Appengine-Remote-Addr') || request.headers.get('X-Cluster-Client-IP') || '未知IP';
 		if (缓存SOCKS5白名单 === null) {
 			if (env.GO2SOCKS5) SOCKS5白名单 = [...new Set(SOCKS5白名单.concat(await 整理成数组(env.GO2SOCKS5)))];
