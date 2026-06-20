@@ -313,6 +313,12 @@ export default {
 						return new Response(本地优选IP, { status: 200, headers: { 'Content-Type': 'text/plain;charset=utf-8', 'asn': request.cf.asn } });
 					} else if (访问路径 === 'admin/cf.json') {// CF配置文件
 						return new Response(JSON.stringify(request.cf, null, 2), { status: 200, headers: { 'Content-Type': 'application/json;charset=utf-8' } });
+					} else if (访问路径 === 'admin/bestips') {// 优选IP管理页面
+						if (!authCookie || authCookie !== await MD5MD5(UA + 加密秘钥 + 管理员密码)) return new Response('重定向中...', { status: 302, headers: { 'Location': '/login' } });
+						return await 生成优选IP页面(env, request);
+					} else if (访问路径 === 'admin/bestips.json') {// 优选IP数据API
+						if (!authCookie || authCookie !== await MD5MD5(UA + 加密秘钥 + 管理员密码)) return new Response(JSON.stringify({ error: '未授权' }), { status: 401 });
+						return await 生成优选IP数据(env, request);
 					}
 
 					ctx.waitUntil(请求日志记录(env, request, 访问IP, 'Admin_Login', config_JSON));
@@ -5943,4 +5949,229 @@ async function html1101(host, 访问IP) {
   </script>
 </body>
 </html>`;
+}
+
+//////////////////////////////////////// cf-optimizer 优选IP管理页面 ////////////////////////////////////////
+
+const 优选IP数据 = {
+	"version": "1.0.0",
+	"updated": "2026-06-21",
+	"regions": {
+		"HK":[{"ip":"43.168.16.112","port":443,"latency":242.52,"speed":50.44,"is_fast":true},{"ip":"122.10.119.252","port":443,"latency":38.94,"speed":0,"is_fast":false},{"ip":"103.43.191.121","port":8443,"latency":59.36,"speed":0,"is_fast":false},{"ip":"103.224.80.7","port":2087,"latency":113.77,"speed":0,"is_fast":false},{"ip":"47.239.4.246","port":443,"latency":137.56,"speed":3.06,"is_fast":false}],
+		"JP":[{"ip":"91.200.243.32","port":443,"latency":47.55,"speed":10.87,"is_fast":true},{"ip":"140.235.37.198","port":443,"latency":57.72,"speed":12.6,"is_fast":true},{"ip":"103.112.1.61","port":8443,"latency":63.9,"speed":15.42,"is_fast":true},{"ip":"103.201.131.83","port":443,"latency":80.79,"speed":15.74,"is_fast":true},{"ip":"45.89.232.111","port":8443,"latency":93.09,"speed":16.57,"is_fast":true}],
+		"KR":[{"ip":"45.93.30.168","port":443,"latency":55.92,"speed":0,"is_fast":false},{"ip":"119.28.162.39","port":8443,"latency":86.85,"speed":7.51,"is_fast":false},{"ip":"141.164.51.88","port":443,"latency":218.5,"speed":0,"is_fast":false},{"ip":"144.24.73.232","port":443,"latency":249.92,"speed":7.03,"is_fast":false},{"ip":"131.186.27.112","port":2096,"latency":290.73,"speed":2.9,"is_fast":false}],
+		"SG":[{"ip":"140.245.101.81","port":443,"latency":209.7,"speed":0,"is_fast":false},{"ip":"139.99.124.165","port":443,"latency":223.35,"speed":0,"is_fast":false},{"ip":"116.251.216.12","port":8443,"latency":223.77,"speed":0,"is_fast":false},{"ip":"129.226.150.167","port":443,"latency":227.21,"speed":8.59,"is_fast":false},{"ip":"124.156.202.172","port":443,"latency":228.83,"speed":0,"is_fast":false}],
+		"TW":[{"ip":"125.228.236.138","port":443,"latency":62.36,"speed":13.26,"is_fast":true},{"ip":"103.115.108.45","port":443,"latency":273.79,"speed":0,"is_fast":false}],
+		"US":[{"ip":"167.172.197.64","port":443,"latency":140.41,"speed":4.23,"is_fast":false},{"ip":"167.172.223.14","port":443,"latency":142.27,"speed":3,"is_fast":false},{"ip":"142.248.218.100","port":2053,"latency":145.67,"speed":5.18,"is_fast":false},{"ip":"146.190.154.188","port":443,"latency":146.62,"speed":0,"is_fast":false},{"ip":"146.190.174.67","port":443,"latency":146.99,"speed":6.29,"is_fast":false}],
+		"AE":[{"ip":"147.78.0.186","port":8443,"latency":166.22,"speed":0,"is_fast":false},{"ip":"147.78.0.186","port":2053,"latency":182.65,"speed":0,"is_fast":false},{"ip":"90.156.220.194","port":2053,"latency":281.65,"speed":0,"is_fast":false},{"ip":"109.61.42.37","port":443,"latency":368.03,"speed":0,"is_fast":false},{"ip":"38.180.11.15","port":443,"latency":441.48,"speed":4.05,"is_fast":false}],
+		"DE":[{"ip":"57.129.47.4","port":8443,"latency":154.15,"speed":0,"is_fast":false},{"ip":"140.82.39.218","port":8443,"latency":156.87,"speed":3.18,"is_fast":false},{"ip":"89.58.15.204","port":8443,"latency":160.14,"speed":0,"is_fast":false},{"ip":"89.168.68.57","port":2053,"latency":161.46,"speed":0,"is_fast":false},{"ip":"91.107.245.213","port":2053,"latency":164.8,"speed":6.32,"is_fast":false}],
+		"GB":[{"ip":"91.199.32.99","port":2053,"latency":183.49,"speed":0,"is_fast":false},{"ip":"146.70.61.40","port":443,"latency":183.66,"speed":5.54,"is_fast":false},{"ip":"91.245.226.122","port":2053,"latency":189.64,"speed":0,"is_fast":false},{"ip":"104.194.144.105","port":443,"latency":190.97,"speed":4.71,"is_fast":false},{"ip":"45.38.19.166","port":2096,"latency":201.8,"speed":6.58,"is_fast":false}],
+		"FR":[{"ip":"31.59.103.186","port":2053,"latency":166.55,"speed":5.09,"is_fast":false},{"ip":"31.59.120.179","port":2053,"latency":166.94,"speed":5.6,"is_fast":false},{"ip":"31.59.121.223","port":8443,"latency":171.04,"speed":4.83,"is_fast":false},{"ip":"31.59.120.124","port":2053,"latency":172.48,"speed":6.65,"is_fast":false},{"ip":"31.58.76.50","port":2053,"latency":172.74,"speed":5.31,"is_fast":false}],
+		"NL":[{"ip":"91.90.192.37","port":443,"latency":150.21,"speed":0,"is_fast":false},{"ip":"31.59.174.246","port":2053,"latency":151.33,"speed":3.41,"is_fast":false},{"ip":"141.144.195.228","port":443,"latency":157.92,"speed":0,"is_fast":false},{"ip":"188.253.27.22","port":443,"latency":161.15,"speed":5.96,"is_fast":false},{"ip":"188.253.26.93","port":443,"latency":163.15,"speed":0,"is_fast":false}],
+		"CA":[{"ip":"140.238.144.211","port":443,"latency":207.41,"speed":0,"is_fast":false},{"ip":"104.223.62.204","port":443,"latency":224.47,"speed":0,"is_fast":false},{"ip":"147.182.144.228","port":443,"latency":226.31,"speed":0,"is_fast":false},{"ip":"96.44.136.186","port":2053,"latency":234.46,"speed":0,"is_fast":false},{"ip":"142.4.215.110","port":443,"latency":278.35,"speed":0,"is_fast":false}],
+		"IN":[{"ip":"13.235.254.54","port":443,"latency":125.56,"speed":12.73,"is_fast":true},{"ip":"139.84.166.44","port":443,"latency":140.37,"speed":8.94,"is_fast":false},{"ip":"103.181.177.88","port":443,"latency":256.44,"speed":0,"is_fast":false},{"ip":"129.154.251.13","port":443,"latency":338,"speed":3.24,"is_fast":false},{"ip":"4.240.110.47","port":443,"latency":338.5,"speed":0,"is_fast":false}],
+		"RU":[{"ip":"45.89.228.81","port":443,"latency":183.47,"speed":3.48,"is_fast":false},{"ip":"95.188.72.67","port":443,"latency":189.03,"speed":0,"is_fast":false},{"ip":"91.188.213.107","port":443,"latency":189.58,"speed":0,"is_fast":false},{"ip":"46.29.162.166","port":443,"latency":191.19,"speed":8.09,"is_fast":false},{"ip":"91.184.244.230","port":443,"latency":217.62,"speed":3.81,"is_fast":false}],
+		"MY":[{"ip":"96.126.190.196","port":443,"latency":184.29,"speed":0,"is_fast":false},{"ip":"47.250.81.46","port":2087,"latency":299.64,"speed":0,"is_fast":false},{"ip":"47.250.212.59","port":2053,"latency":304.24,"speed":0,"is_fast":false},{"ip":"47.250.212.59","port":443,"latency":321.71,"speed":4.4,"is_fast":false},{"ip":"38.54.112.233","port":443,"latency":614.62,"speed":0,"is_fast":false}]
+	}
+};
+
+async function 生成优选IP数据(env, request) {
+	const url = new URL(request.url);
+	const region = (url.searchParams.get('region') || '').toUpperCase();
+	const data = JSON.parse(JSON.stringify(优选IP数据));
+	
+	// 尝试从 KV 读取最新数据
+	try {
+		if (env.BEST_IPS_KV) {
+			const kvData = await env.BEST_IPS_KV.get('best_ips');
+			if (kvData) {
+				const parsed = 解析优选IP文本(kvData);
+				if (parsed) data.regions = parsed;
+			}
+		}
+	} catch (e) {}
+	
+	if (region && data.regions[region]) {
+		return new Response(JSON.stringify({ region, nodes: data.regions[region], version: data.version, updated: data.updated }), {
+			status: 200, headers: { 'Content-Type': 'application/json;charset=utf-8', 'Access-Control-Allow-Origin': '*' }
+		});
+	}
+	
+	return new Response(JSON.stringify(data), {
+		status: 200, headers: { 'Content-Type': 'application/json;charset=utf-8', 'Access-Control-Allow-Origin': '*' }
+	});
+}
+
+function 解析优选IP文本(text) {
+	const regions = {};
+	for (const line of text.split('\n')) {
+		const trimmed = line.trim();
+		if (!trimmed || !trimmed.includes('#')) continue;
+		const parts = trimmed.split('#');
+		if (parts.length < 2) continue;
+		const addr = parts[0].trim();
+		const region = parts[1].split('[')[0].trim().toUpperCase();
+		const rest = trimmed.includes('[') ? trimmed.split('[')[1].replace(']', '') : '';
+		const latencyMatch = rest.match(/([\d.]+)ms/);
+		const speedMatch = rest.match(/([\d.]+)Mbps/);
+		const isFast = trimmed.includes('优选高速');
+		const ipPort = addr.split(':');
+		if (!regions[region]) regions[region] = [];
+		regions[region].push({
+			ip: ipPort[0],
+			port: parseInt(ipPort[1]) || 443,
+			latency: latencyMatch ? parseFloat(latencyMatch[1]) : 0,
+			speed: speedMatch ? parseFloat(speedMatch[1]) : 0,
+			is_fast: isFast
+		});
+	}
+	return Object.keys(regions).length > 0 ? regions : null;
+}
+
+async function 生成优选IP页面(env, request) {
+	const url = new URL(request.url);
+	const data = await 生成优选IP数据(env, request);
+	const jsonData = JSON.parse(await data.text());
+	
+	const regions = Object.keys(jsonData.regions || {});
+	const fastCount = regions.reduce((sum, r) => sum + jsonData.regions[r].filter(n => n.is_fast).length, 0);
+	const totalCount = regions.reduce((sum, r) => sum + jsonData.regions[r].length, 0);
+	
+	return new Response(`<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>优选 IP 管理 - edgetunnel</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#0f1117;color:#e1e4eb;min-height:100vh}
+.container{max-width:1200px;margin:0 auto;padding:20px}
+.header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:#1a1d27;border-radius:12px;margin-bottom:20px;border:1px solid #2a2d3a}
+.header h1{font-size:20px;font-weight:700;color:#e1e4eb}
+.header .stats{display:flex;gap:16px;font-size:13px}
+.stat{display:flex;align-items:center;gap:6px;padding:4px 12px;border-radius:6px;background:#252836}
+.stat-label{color:#888b9e}
+.stat-value{color:#e1e4eb;font-weight:600}
+.stat-value.fast{color:#34d399}
+.stat-value.total{color:#60a5fa}
+.controls{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.region-filter{display:flex;gap:6px;flex-wrap:wrap}
+.region-btn{padding:6px 14px;border-radius:6px;border:1px solid #2a2d3a;background:#1a1d27;color:#888b9e;cursor:pointer;font-size:13px;transition:all .15s}
+.region-btn:hover{border-color:#60a5fa;color:#e1e4eb}
+.region-btn.active{background:#2563eb;border-color:#2563eb;color:#fff}
+.region-btn.fast-highlight{border-color:#34d399;color:#34d399}
+.table-wrap{background:#1a1d27;border-radius:12px;border:1px solid #2a2d3a;overflow:hidden}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{padding:12px 16px;text-align:left;background:#252836;color:#888b9e;font-weight:600;border-bottom:1px solid #2a2d3a;white-space:nowrap}
+td{padding:10px 16px;border-bottom:1px solid #252836;vertical-align:middle}
+tr:hover td{background:rgba(37,99,235,0.05)}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-flex;padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600}
+.badge.fast{background:rgba(52,211,153,0.15);color:#34d399}
+.badge.normal{background:rgba(136,139,158,0.15);color:#888b9e}
+.speed-bar{display:inline-block;height:6px;border-radius:3px;background:#252836;overflow:hidden;vertical-align:middle;margin-right:6px;width:60px}
+.speed-bar-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#34d399,#10b981);transition:width .3s}
+.latency-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.latency-dot.good{background:#34d399}
+.latency-dot.fair{background:#fbbf24}
+.latency-dot.slow{background:#f87171}
+.copy-btn{padding:4px 10px;border-radius:4px;border:none;background:#2563eb;color:#fff;cursor:pointer;font-size:11px;transition:background .15s}
+.copy-btn:hover{background:#1d4ed8}
+.back-link{display:inline-flex;align-items:center;gap:6px;color:#60a5fa;text-decoration:none;font-size:13px;margin-bottom:16px}
+.back-link:hover{color:#93c5fd}
+.region-section{margin-bottom:24px}
+.region-header{display:flex;align-items:center;gap:12px;padding:10px 16px;border-radius:8px;background:#252836;margin-bottom:8px}
+.region-header h3{font-size:15px;font-weight:600;color:#e1e4eb}
+.region-count{font-size:12px;color:#888b9e}
+@media(max-width:768px){th,td{padding:8px 10px;font-size:12px}.speed-bar{width:40px}}
+</style>
+</head>
+<body>
+<div class="container">
+	<div class="header">
+		<div>
+			<h1>🌐 优选 IP 管理</h1>
+			<div style="font-size:12px;color:#888b9e;margin-top:4px">版本 ${jsonData.version} | 更新于 ${jsonData.updated}</div>
+		</div>
+		<div class="stats">
+			<div class="stat"><span class="stat-label">优选高速</span><span class="stat-value fast">${fastCount}</span></div>
+			<div class="stat"><span class="stat-label">总节点</span><span class="stat-value total">${totalCount}</span></div>
+			<div class="stat"><span class="stat-label">地区</span><span class="stat-value total">${regions.length}</span></div>
+		</div>
+	</div>
+	
+	<a href="/admin" class="back-link">← 返回管理后台</a>
+	
+	<div class="controls">
+		<div class="region-filter" id="regionFilter">
+			<button class="region-btn active" onclick="filterRegion('all')">🌍 全部</button>
+			${regions.map(r => \`<button class="region-btn\${jsonData.regions[r].some(n=>n.is_fast) ? ' fast-highlight' : ''}" onclick="filterRegion('\${r}')">\${r}</button>\`).join('')}
+		</div>
+	</div>
+	
+	${regions.map(region => \`
+	<div class="region-section" data-region="\${region}">
+		<div class="region-header">
+			<h3>🌍 \${region}</h3>
+			<span class="region-count">\${jsonData.regions[region].length} 个节点</span>
+		</div>
+		<div class="table-wrap">
+			<table>
+				<thead><tr>
+					<th>IP 地址</th>
+					<th>端口</th>
+					<th>延迟</th>
+					<th>下载速度</th>
+					<th>状态</th>
+					<th>操作</th>
+				</tr></thead>
+				<tbody>
+				\${jsonData.regions[region].map(n => {
+					const latClass = n.latency < 80 ? 'good' : n.latency < 200 ? 'fair' : 'slow';
+					const speedPct = Math.min(100, (n.speed / 50) * 100);
+					return \`<tr>
+						<td style="font-family:monospace;font-weight:500">\${n.ip}</td>
+						<td>\${n.port}</td>
+						<td><span class="latency-dot \${latClass}"></span>\${n.latency.toFixed(1)}ms</td>
+						<td>
+							<div class="speed-bar"><div class="speed-bar-fill" style="width:\${speedPct}%"></div></div>
+							\${n.speed > 0 ? n.speed.toFixed(1) + 'Mbps' : '-'}
+						</td>
+						<td><span class="badge \${n.is_fast ? 'fast' : 'normal'}">\${n.is_fast ? '⚡优选高速' : '普通'}</span></td>
+						<td><button class="copy-btn" onclick="copyIP('\${n.ip}:\${n.port}')">复制</button></td>
+					</tr>\`;
+				}).join('')}
+				</tbody>
+			</table>
+		</div>
+	</div>
+	\`).join('')}
+</div>
+
+<script>
+function filterRegion(region) {
+	document.querySelectorAll('.region-btn').forEach(b => b.classList.remove('active'));
+	event.target.classList.add('active');
+	document.querySelectorAll('.region-section').forEach(s => {
+		if (region === 'all' || s.dataset.region === region) {
+			s.style.display = '';
+		} else {
+			s.style.display = 'none';
+		}
+	});
+}
+function copyIP(text) {
+	navigator.clipboard.writeText(text).then(() => {
+		const btn = event.target;
+		btn.textContent = '✅ 已复制';
+		setTimeout(() => { btn.textContent = '复制'; }, 1500);
+	});
+}
+</script>
+</body>
+</html>`, {
+		status: 200,
+		headers: { 'Content-Type': 'text/html;charset=utf-8' }
+	});
 }
